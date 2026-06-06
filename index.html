@@ -148,13 +148,32 @@
     .btn-outline-dark { display: inline-block; color: var(--black); padding: 18px 44px; font-size: 13px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border: 2px solid var(--black); transition: background 0.2s, color 0.2s; font-family: 'DM Sans', sans-serif; }
     .btn-outline-dark:hover { background: var(--black); color: var(--text); }
 
-    footer { background: var(--black); border-top: 1px solid var(--border); padding: 40px 60px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    footer { background: var(--black); border-top: 1px solid var(--border); padding: 40px 60px 28px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .footer-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; width: 100%; }
     .footer-logo { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); text-decoration: none; }
     .footer-logo .logo-accent { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 500; font-size: 16px; color: var(--gold); letter-spacing: 0; text-transform: none; }
     .footer-links { display: flex; gap: 28px; list-style: none; }
     .footer-links a { font-size: 12px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.5px; transition: color 0.2s; }
     .footer-links a:hover { color: var(--text-muted); }
-    .footer-copy { font-size: 12px; color: var(--text-dim); }
+    .footer-bottom { width: 100%; border-top: 1px solid var(--border); padding-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .footer-disclaimer { font-size: 11px; color: var(--text-dim); line-height: 1.7; text-align: center; max-width: 720px; }
+    .footer-legal-links { display: flex; gap: 24px; }
+    .footer-legal-links a { font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.5px; transition: color 0.2s; cursor: pointer; }
+    .footer-legal-links a:hover { color: var(--gold); }
+    .footer-copy { font-size: 11px; color: var(--text-dim); }
+
+    /* Legal Modal */
+    .legal-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; padding: 24px; }
+    .legal-modal-overlay.open { display: flex; }
+    .legal-modal { background: #141414; border: 1px solid rgba(201,168,76,0.15); max-width: 680px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 48px 48px 40px; position: relative; }
+    .legal-modal-close { position: absolute; top: 20px; right: 24px; background: none; border: none; color: var(--text-dim); font-size: 22px; cursor: pointer; line-height: 1; transition: color 0.2s; }
+    .legal-modal-close:hover { color: var(--text); }
+    .legal-modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .legal-modal .legal-date { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 28px; display: block; }
+    .legal-modal h3 { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: var(--gold-light); margin: 24px 0 10px; text-transform: uppercase; }
+    .legal-modal p, .legal-modal li { font-size: 13px; color: var(--text-muted); line-height: 1.8; margin-bottom: 10px; }
+    .legal-modal ul { margin: 0 0 12px 18px; }
+    .legal-modal a { color: var(--gold); }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -172,7 +191,7 @@
       .system-section { padding: 60px 24px; } .services-grid { grid-template-columns: 1fr; }
       .steps-grid { grid-template-columns: 1fr; }
       .cta-section { padding: 60px 24px; }
-      footer { padding: 32px 24px; flex-direction: column; text-align: center; } .footer-links { flex-wrap: wrap; justify-content: center; }
+      footer { padding: 32px 24px; } .footer-top { flex-direction: column; align-items: center; text-align: center; } .footer-links { flex-wrap: wrap; justify-content: center; } .footer-legal-links { flex-wrap: wrap; justify-content: center; }
     }
   
     .pre-quiz-cta .section-title { margin-bottom: 16px; }
@@ -897,16 +916,34 @@
 </section>
 
 <footer>
-  <a href="#" class="footer-logo">Legacy Mastery <span class="logo-accent">Circle</span></a>
-  <ul class="footer-links">
-    <li><a href="#results">Results</a></li>
-    <li><a href="#system">Framework</a></li>
-    <li><a href="#services">Diagnosis</a></li>
-    <li><a href="#about">About Nancy</a></li>
-    <li><a href="https://audit.legacymasterycircle.com">Free Audit</a></li>
-  </ul>
-  <span class="footer-copy">© 2026 Legacy Mastery Circle · Nancy Saavedra Flores</span>
+  <div class="footer-top">
+    <a href="#" class="footer-logo">Legacy Mastery <span class="logo-accent">Circle</span></a>
+    <ul class="footer-links">
+      <li><a href="#results">Results</a></li>
+      <li><a href="#system">Framework</a></li>
+      <li><a href="#services">Diagnosis</a></li>
+      <li><a href="#about">About Nancy</a></li>
+      <li><a href="free-audit-updated.html">Free Audit</a></li>
+    </ul>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-disclaimer">Results shared on this website are not typical. Individual outcomes vary based on experience, effort, market conditions, and other factors. Legacy Mastery Circle does not guarantee specific income results. Testimonials and case studies represent exceptional results achieved by individual clients and should not be interpreted as a promise or guarantee of the same outcome.</p>
+    <div class="footer-legal-links">
+      <a onclick="openLegal('privacy')">Privacy Policy</a>
+      <a onclick="openLegal('terms')">Terms of Service</a>
+      <a href="mailto:nancy@legacymasterycircle.com">Contact</a>
+    </div>
+    <span class="footer-copy">© 2026 Legacy Mastery Circle · Nancy Saavedra Flores</span>
+  </div>
 </footer>
+
+<!-- Legal Modal -->
+<div class="legal-modal-overlay" id="legalModal" onclick="closeLegalOnOverlay(event)">
+  <div class="legal-modal">
+    <button class="legal-modal-close" onclick="closeLegal()">×</button>
+    <div id="legalContent"></div>
+  </div>
+</div>
 
 <script>
 
@@ -1078,6 +1115,73 @@
       : (firstName ? firstName + '\'s' : 'Your') + ' foundations are solid. At this stage it\'s about tightening the gaps that are costing you the difference between good months and great ones.';
 
     window.scrollTo(0, 0);
+  }
+
+  const LEGAL_CONTENT = {
+    privacy: `
+      <h2>Privacy Policy</h2>
+      <span class="legal-date">Effective Date: June 2026</span>
+      <h3>1. Who We Are</h3>
+      <p>This Privacy Policy applies to Legacy Mastery Circle, operated by Nancy Saavedra Flores. We provide consulting and coaching services through legacymasterycircle.com and nancysaavedraflores.com. Questions? <a href="mailto:nancy@legacymasterycircle.com">nancy@legacymasterycircle.com</a></p>
+      <h3>2. What We Collect</h3>
+      <ul>
+        <li><strong>Contact info:</strong> First name, email, and phone submitted through our forms.</li>
+        <li><strong>Assessment data:</strong> Responses submitted through our diagnostic tools.</li>
+        <li><strong>Communication data:</strong> Messages via WhatsApp, email, or other channels.</li>
+        <li><strong>Usage data:</strong> Pages visited and general browsing behavior via analytics tools.</li>
+      </ul>
+      <h3>3. How We Use It</h3>
+      <ul>
+        <li>Deliver assessment results and personalized recommendations</li>
+        <li>Follow up via email, WhatsApp, or phone regarding our services</li>
+        <li>Send relevant content, offers, and program updates</li>
+        <li>Improve our website and services</li>
+      </ul>
+      <p>We will never sell, rent, or trade your personal information to third parties for their marketing purposes.</p>
+      <h3>4. Communication</h3>
+      <p>By submitting your contact information, you consent to being contacted via email and WhatsApp. You may opt out at any time by replying "STOP" to any WhatsApp message or emailing us directly.</p>
+      <h3>5. Third-Party Services</h3>
+      <p>We use trusted platforms including email/CRM tools, payment processors (Wise, PayPal), video platforms, and website hosting. Each has its own privacy policy.</p>
+      <h3>6. Your Rights</h3>
+      <p>You may request access to, correction of, or deletion of your personal data at any time by contacting <a href="mailto:nancy@legacymasterycircle.com">nancy@legacymasterycircle.com</a>.</p>
+      <h3>7. Changes</h3>
+      <p>We may update this policy from time to time. Continued use of our website constitutes acceptance of any updated version.</p>
+    `,
+    terms: `
+      <h2>Terms of Service</h2>
+      <span class="legal-date">Effective Date: June 2026</span>
+      <h3>1. Acceptance</h3>
+      <p>By accessing or using any service offered by Legacy Mastery Circle (operated by Nancy Saavedra Flores), you agree to these Terms. If you do not agree, please do not use our services.</p>
+      <h3>2. Services</h3>
+      <p>Legacy Mastery Circle offers consulting, coaching, and educational programs including strategy sessions, done-with-you implementation programs, diagnostic assessments, and digital resources.</p>
+      <h3>3. No Guarantee of Results</h3>
+      <p>We make no guarantees of specific outcomes, income levels, or business results. All results depend on individual effort, background, market conditions, and application of strategies. Testimonials represent exceptional individual results and are not a promise of similar outcomes.</p>
+      <h3>4. Payment Terms</h3>
+      <p>All fees are outlined at the time of purchase. Accepted payment methods include Wise and PayPal. Payment plans may be available for select programs. All prices are in USD unless stated otherwise.</p>
+      <h3>5. Refund Policy</h3>
+      <p>All sales are final. We do not offer refunds once a program has started or a session has been delivered. If you have concerns, contact us within 48 hours of payment at <a href="mailto:nancy@legacymasterycircle.com">nancy@legacymasterycircle.com</a>.</p>
+      <h3>6. Intellectual Property</h3>
+      <p>All content, frameworks, and materials shared through Legacy Mastery Circle are the intellectual property of Nancy Saavedra Flores. You may not reproduce, distribute, or resell any materials without prior written consent.</p>
+      <h3>7. Limitation of Liability</h3>
+      <p>To the maximum extent permitted by law, Legacy Mastery Circle and Nancy Saavedra Flores shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services.</p>
+      <h3>8. Governing Law</h3>
+      <p>These Terms are governed by the laws of Ecuador. Disputes will be resolved through good-faith negotiation between the parties.</p>
+    `
+  };
+
+  function openLegal(type) {
+    document.getElementById('legalContent').innerHTML = LEGAL_CONTENT[type];
+    document.getElementById('legalModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLegal() {
+    document.getElementById('legalModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeLegalOnOverlay(e) {
+    if (e.target === document.getElementById('legalModal')) closeLegal();
   }
 
 </script>
