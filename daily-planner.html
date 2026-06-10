@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legacy Mastery Circle — Daily Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0d0d;--surface:#161616;--surface2:#1c1c1c;--surface3:#222;
+  --border:#252525;--border2:#2e2e2e;--border3:#383838;
+  --gold:#f0b429;--gold2:#c8901e;--gold-bg:rgba(240,180,41,0.07);--gold-border:rgba(240,180,41,0.25);
+  --green:#3ecf6e;--green-bg:rgba(62,207,110,0.08);--green-border:rgba(62,207,110,0.2);
+  --red:#f06060;--red-bg:rgba(240,96,96,0.08);
+  --text:#efefef;--text2:#888;--text3:#4a4a4a;--text4:#333;
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+}
+html{background:var(--bg);}
+body{font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 6rem;}
+
+/* HERO */
+.hero{text-align:center;padding:3rem 1rem 2rem;border-bottom:0.5px solid var(--border);}
+.hero-crown{font-size:2rem;margin-bottom:.5rem;}
+.hero-brand{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem;}
+.hero-date{font-size:2.25rem;font-weight:800;color:var(--text);margin-bottom:.4rem;line-height:1.1;}
+.hero-greeting{font-size:15px;color:var(--text2);}
+
+/* PROGRESS BAR */
+.day-progress{max-width:760px;margin:1.5rem auto 0;padding:0 1rem;}
+.prog-bar-bg{background:var(--surface2);border-radius:100px;height:5px;overflow:hidden;margin-bottom:.4rem;}
+.prog-bar-fill{height:100%;background:var(--gold);border-radius:100px;transition:width .4s ease;}
+.prog-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);text-align:right;}
+
+/* LAYOUT */
+.page{max-width:760px;margin:0 auto;padding:0 1rem;}
+
+/* SECTION CARD */
+.section{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;}
+.section-title{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);}
+.section-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
+.section-sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5;}
+.label-xs{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:9px;}
+
+/* PERMANENT BADGE */
+.badge-perm{background:var(--surface2);border:0.5px solid var(--border3);border-radius:var(--radius-xs);padding:4px 10px;font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:5px;}
+
+/* INPUTS */
+.inp{background:var(--surface2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:10px 13px;outline:none;transition:border-color .15s;width:100%;}
+.inp:focus{border-color:var(--gold2);}
+.inp::placeholder{color:var(--text3);}
+.inp-mono{font-family:'DM Mono',monospace;}
+textarea.inp{resize:vertical;min-height:90px;line-height:1.55;}
+
+/* GOALS GRID */
+.goals-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.goal-block label{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+
+/* OUTREACH CALCULATOR */
+.calc-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.calc-full{margin-bottom:10px;}
+.calc-note{font-size:12px;color:var(--text2);margin-bottom:1rem;}
+.calc-results{background:var(--surface2);border:0.5px solid var(--border3);border-radius:var(--radius-sm);overflow:hidden;}
+.calc-row1{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:0.5px solid var(--border3);}
+.calc-row2{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.calc-cell{padding:14px 16px;text-align:center;}
+.calc-cell+.calc-cell{border-left:0.5px solid var(--border3);}
+.calc-val{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:var(--gold);display:block;margin-bottom:4px;}
+.calc-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+.calc-standard-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);padding:12px 16px 4px;}
+.calc-insight{background:var(--green-bg);border:0.5px solid var(--green-border);border-radius:var(--radius-sm);padding:12px 14px;margin-top:10px;font-size:12px;color:var(--green);line-height:1.6;}
+
+/* RITUAL ITEMS */
+.ritual-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--border);}
+.ritual-item:last-child{border-bottom:none;padding-bottom:0;}
+.ritual-item:first-child{padding-top:0;}
+.ritual-text h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.3;}
+.ritual-text h4 a{color:var(--gold);text-decoration:none;}
+.ritual-text p{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* CHECKBOX */
+.cb{width:22px;height:22px;min-width:22px;border:0.5px solid var(--border3);border-radius:5px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;margin-top:1px;}
+.cb:hover{border-color:var(--gold2);}
+.cb.on{background:var(--gold);border-color:var(--gold);}
+.cb.on::after{content:'';width:5px;height:9px;border:2px solid #0d0d0d;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);display:block;}
+
+/* PRIORITY ROWS */
+.p-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.p-num{width:28px;height:28px;min-width:28px;border-radius:50%;background:var(--gold);color:#0d0d0d;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.p-num.hash{background:transparent;color:var(--gold);font-size:14px;font-weight:700;font-family:'DM Mono',monospace;}
+.p-inp{flex:1;}
+.p-inp.struck{text-decoration:line-through;color:var(--text3);}
+
+/* REVENUE TARGETS */
+.rev-banner{background:var(--green-bg);border:0.5px solid var(--green-border);border-radius:var(--radius-sm);padding:9px 13px;display:flex;align-items:center;gap:7px;margin-bottom:1rem;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);}
+.rev-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:var(--surface2);border:0.5px solid var(--border3);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:1rem;}
+.rev-stat{padding:14px 16px;text-align:center;}
+.rev-stat+.rev-stat{border-left:0.5px solid var(--border3);}
+.rev-stat-val{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--gold);display:block;margin-bottom:3px;}
+.rev-stat-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+.rev-goal-note{font-size:12px;color:var(--text2);}
+.rev-goal-note span{color:var(--gold);cursor:pointer;text-decoration:underline;}
+
+/* OUTREACH SECTION */
+.outreach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;}
+.o-field label{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.o-field-inner{display:flex;align-items:center;gap:8px;}
+.o-num-inp{width:80px;background:var(--surface2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:18px;font-weight:500;padding:8px 12px;outline:none;transition:border-color .15s;}
+.o-num-inp:focus{border-color:var(--gold2);}
+.o-target{font-size:12px;color:var(--text2);}
+
+/* TIME BLOCK TRACKER */
+.tb-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.tb-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);width:52px;min-width:52px;}
+.tb-time.now{color:var(--gold);font-weight:700;}
+.tb-inp{flex:1;font-size:13px;padding:8px 12px;}
+
+/* THIS WEEK chart */
+.week-chart{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;align-items:flex-end;margin-bottom:.5rem;}
+.week-day{text-align:center;}
+.week-bar-wrap{height:80px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:4px;}
+.week-bar{width:100%;max-width:36px;background:var(--surface2);border-radius:4px 4px 0 0;transition:height .3s ease;min-height:4px;}
+.week-bar.today{background:var(--gold);}
+.week-bar.has-data{background:rgba(240,180,41,0.45);}
+.week-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);text-transform:uppercase;}
+.week-pct{font-family:'DM Mono',monospace;font-size:9px;color:var(--text2);margin-bottom:2px;}
+.week-export{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;}
+.week-note{font-size:12px;color:var(--text3);}
+.export-btn{background:var(--surface2);border:0.5px solid var(--border3);border-radius:var(--radius-sm);color:var(--text2);font-size:12px;font-family:'Syne',sans-serif;padding:7px 14px;cursor:pointer;transition:all .15s;}
+.export-btn:hover{border-color:var(--gold2);color:var(--gold);}
+
+/* PLAN TOMORROW */
+.brain-wrap{position:relative;}
+.brain-count{position:absolute;bottom:10px;right:12px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);}
+.copy-btn{background:var(--gold);border:none;border-radius:var(--radius-sm);color:#0d0d0d;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:11px 20px;cursor:pointer;transition:opacity .15s;margin-top:.75rem;}
+.copy-btn:hover{opacity:.88;}
+.copy-note{font-size:12px;color:var(--text2);margin-top:.5rem;}
+.sleep-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.sleep-inp{background:var(--surface2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--gold);font-family:'DM Mono',monospace;font-size:18px;font-weight:500;padding:8px 12px;outline:none;width:90px;transition:border-color .15s;}
+.sleep-inp:focus{border-color:var(--gold2);}
+.sleep-calc{font-size:13px;color:var(--text2);}
+
+/* SCORE */
+.score-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;background:var(--surface2);border:0.5px solid var(--border3);border-radius:var(--radius-sm);overflow:hidden;}
+.score-cell{padding:18px 16px;text-align:center;}
+.score-cell+.score-cell{border-left:0.5px solid var(--border3);}
+.score-val{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:500;color:var(--gold);display:block;margin-bottom:4px;}
+.score-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+
+/* BOTTOM ACTIONS */
+.bottom-actions{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:1.5rem;flex-wrap:wrap;}
+.save-btn{background:var(--gold);border:none;border-radius:var(--radius-sm);color:#0d0d0d;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;padding:13px 32px;cursor:pointer;transition:opacity .15s;}
+.save-btn:hover{opacity:.88;}
+.newday-btn{background:var(--surface);border:0.5px solid var(--border3);border-radius:var(--radius-sm);color:var(--text2);font-family:'Syne',sans-serif;font-size:13px;padding:12px 20px;cursor:pointer;transition:all .15s;}
+.newday-btn:hover{border-color:var(--text2);color:var(--text);}
+
+/* AUTO-SAVE */
+.autosave{text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-top:.75rem;transition:color .3s;}
+.autosave.ok{color:var(--green);}
+
+/* DIVIDER */
+.divider{height:0.5px;background:var(--border);margin:1.25rem 0;}
+
+@media(max-width:540px){
+  .goals-grid,.calc-inputs,.outreach-grid,.score-grid,.rev-stats,.calc-row1,.calc-row2{grid-template-columns:1fr;}
+  .calc-row1,.calc-row2{border:none;}
+  .calc-cell,.score-cell,.rev-stat{border-left:none!important;border-bottom:0.5px solid var(--border3);}
+  .hero-date{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-crown">♛</div>
+  <div class="hero-brand">Legacy Mastery Circle</div>
+  <div class="hero-date" id="hero-date"></div>
+  <div class="hero-greeting" id="hero-greeting"></div>
+</div>
+
+<div class="day-progress page">
+  <div class="prog-bar-bg"><div class="prog-bar-fill" id="day-prog-fill" style="width:0%"></div></div>
+  <div class="prog-label" id="day-prog-label">0% of your ideal day completed</div>
+</div>
+
+<div class="page" style="margin-top:1.5rem;">
+
+<!-- ═══ MY GOALS (PERMANENT) ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">🏆 My Goals</div>
+    <div class="badge-perm">🔒 Permanent</div>
+  </div>
+  <p class="section-sub">This section never resets. Fill it once — it stays across every new day.</p>
+  <div class="goals-grid">
+    <div class="goal-block"><label>Year Goal</label><input class="inp" id="g-year" placeholder="e.g. 1 million" oninput="savePerm()"></div>
+    <div class="goal-block"><label>Month Goal</label><input class="inp" id="g-month" placeholder="e.g. 86000" oninput="savePerm()"></div>
+    <div class="goal-block"><label>Week Goal</label><input class="inp" id="g-week" placeholder="What wins must happen this week?" oninput="savePerm()"></div>
+    <div class="goal-block"><label>Today's Goal</label><input class="inp" id="g-today" placeholder="One outcome that makes today a win..." oninput="saveDay()"></div>
+  </div>
+</div>
+
+<!-- ═══ OUTREACH CALCULATOR ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">📊 Outreach Calculator — Future Dictates Present</div>
+  </div>
+  <p class="section-sub">Set your goal and your daily commitment. The calculator tells you the <em>standard you must hold</em> to make it happen.</p>
+  <div class="calc-inputs">
+    <div class="goal-block"><label>Year Revenue Goal ($)</label><input class="inp inp-mono" id="c-year" placeholder="1000000" oninput="savePerm();calcOutreach()"></div>
+    <div class="goal-block"><label>Price Per Client ($)</label><input class="inp inp-mono" id="c-price" placeholder="25000" oninput="savePerm();calcOutreach()"></div>
+  </div>
+  <div class="calc-full">
+    <div class="goal-block"><label>DMs I Commit to Sending Per Day</label><input class="inp inp-mono" id="c-dms" placeholder="40" oninput="savePerm();calcOutreach()"></div>
+  </div>
+  <p class="calc-note">This is your daily non-negotiable. The goal tells you what standard that effort must hit.</p>
+  <div class="calc-results">
+    <div class="calc-row1">
+      <div class="calc-cell"><span class="calc-val" id="cr-monthly">—</span><span class="calc-lbl">Monthly</span></div>
+      <div class="calc-cell"><span class="calc-val" id="cr-weekly">—</span><span class="calc-lbl">Weekly</span></div>
+      <div class="calc-cell"><span class="calc-val" id="cr-cpw">—</span><span class="calc-lbl">Clients/Week</span></div>
+    </div>
+    <div class="calc-standard-label">The standard your outreach must hit:</div>
+    <div class="calc-row2">
+      <div class="calc-cell"><span class="calc-val" id="cr-calls">—</span><span class="calc-lbl">Calls to Book/Week</span></div>
+      <div class="calc-cell"><span class="calc-val" id="cr-bookrate">—</span><span class="calc-lbl">% DMs → Call Needed</span></div>
+      <div class="calc-cell"><span class="calc-val" id="cr-closerate">25%*</span><span class="calc-lbl">% Calls → Close Needed</span></div>
+    </div>
+  </div>
+  <div class="calc-insight" id="calc-insight" style="display:none"></div>
+</div>
+
+<!-- ═══ MORNING RITUAL ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">🌄 Morning Ritual</div>
+    <span class="section-time">6:00 AM</span>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r0" onclick="toggleRitual(0)"></div>
+    <div class="ritual-text"><h4>Meditation &amp; Visualization</h4><p>10 minutes. See your goals as already done. Feel it in the body.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r1" onclick="toggleRitual(1)"></div>
+    <div class="ritual-text"><h4>Gratitude &amp; Prayer</h4><p>3 things you're grateful for. Speak to God from trust, not desperation.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r2" onclick="toggleRitual(2)"></div>
+    <div class="ritual-text"><h4>Journaling</h4><p>Write it out. Goals in past tense. Clear your mind before the day starts.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r3" onclick="toggleRitual(3)"></div>
+    <div class="ritual-text"><h4>♛ <a href="file:///Users/nancysaavedraflores/Library/Application%20Support/Claude/local-agent-mode-sessions/34239776-0ee1-43b1-9ee0-e07c0522e57b/2daa670f-9420-41e4-8f20-1961ac97e685/local_a48ded80-06ae-4ed0-a5fc-e2c52fe4b4d2/outputs/avatar-manifesto.html" target="_blank">ME TODAY — Read your Identity</a> →</h4><p>Feel who you are. Claim it. Then go be her.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r4" onclick="toggleRitual(4)"></div>
+    <div class="ritual-text"><h4>Exercise — move toward 48kg strong</h4><p>Move from love, not punishment. Even 20 minutes changes everything.</p></div>
+  </div>
+</div>
+
+<!-- ═══ WORK TOP PRIORITIES ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">🎯 Work — Top Priorities</div>
+    <span class="section-time">Morning</span>
+  </div>
+  <p class="section-sub">Pulled from last night's Plan Tomorrow. The 3 things that MUST happen today.</p>
+  <div class="label-xs">Today's Top 3</div>
+  <div class="p-row"><div class="p-num">1</div><input class="inp p-inp" id="p1" placeholder="Priority 1..." oninput="saveDay()"><div class="cb" id="pc1" onclick="togglePriority(1)"></div></div>
+  <div class="p-row"><div class="p-num">2</div><input class="inp p-inp" id="p2" placeholder="Priority 2..." oninput="saveDay()"><div class="cb" id="pc2" onclick="togglePriority(2)"></div></div>
+  <div class="p-row"><div class="p-num">3</div><input class="inp p-inp" id="p3" placeholder="Priority 3..." oninput="saveDay()"><div class="cb" id="pc3" onclick="togglePriority(3)"></div></div>
+  <div class="divider"></div>
+  <div class="label-xs">Additional Tasks</div>
+  <textarea class="inp" id="extra-tasks" placeholder="Other things to get done today..." oninput="saveDay()"></textarea>
+</div>
+
+<!-- ═══ DAILY PLANNER — 30 MIN TRACKER ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">⏱️ Daily Planner</div>
+    <span class="section-time">Track Every 30 Min</span>
+  </div>
+  <p class="section-sub">What did I do every 30 minutes? Track it live so you can replicate what works and cut what doesn't.</p>
+  <div id="timeblock-rows"></div>
+</div>
+
+<!-- ═══ AFTERNOON RITUALS ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">☀️ Afternoon Rituals</div>
+    <span class="section-time">2:00 PM</span>
+  </div>
+  <div class="rev-banner">📌 Today's Revenue Targets</div>
+  <div class="rev-stats">
+    <div class="rev-stat"><span class="rev-stat-val" id="rs-dms">—</span><span class="rev-stat-lbl">DMs to Send</span></div>
+    <div class="rev-stat"><span class="rev-stat-val" id="rs-calls">—</span><span class="rev-stat-lbl">Calls to Book / Week</span></div>
+    <div class="rev-stat"><span class="rev-stat-val" id="rs-clients">—</span><span class="rev-stat-lbl">Clients to Close / Week</span></div>
+  </div>
+  <p class="rev-goal-note" id="rev-goal-note">Goal: <span onclick="document.getElementById('g-week').focus()">Set your week goal above</span></p>
+  <div class="divider"></div>
+  <div class="ritual-item">
+    <div class="cb" id="r5" onclick="toggleRitual(5)"></div>
+    <div class="ritual-text"><h4>Hydration &amp; movement break</h4><p>Step away from the screen. Drink water. Walk 5 minutes.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r6" onclick="toggleRitual(6)"></div>
+    <div class="ritual-text"><h4>Reviewed DMs, inbox &amp; pipeline</h4><p>Check every conversation. Reply. Follow up. Never let a lead go cold.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r7" onclick="toggleRitual(7)"></div>
+    <div class="ritual-text"><h4>Follow-ups completed</h4><p>Every pending conversation has been followed up today.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r8" onclick="toggleRitual(8)"></div>
+    <div class="ritual-text"><h4>Content published today</h4><p>Posted on LinkedIn, IG, or wherever you committed to showing up.</p></div>
+  </div>
+  <div class="ritual-item">
+    <div class="cb" id="r9" onclick="toggleRitual(9)"></div>
+    <div class="ritual-text"><h4>Pipeline updated</h4><p>All conversations and outcomes logged. Nothing falls through the cracks.</p></div>
+  </div>
+  <!-- PIPELINE TRACKER -->
+  <div class="divider"></div>
+  <div class="label-xs" style="margin-bottom:10px">📋 Pipeline — Today's Conversations</div>
+  <div id="pipeline-rows"></div>
+  <button onclick="addPipelineRow()" style="background:var(--surface2);border:0.5px solid var(--border3);border-radius:var(--radius-sm);color:var(--gold);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;padding:8px 16px;cursor:pointer;margin-top:6px;">+ Add Lead</button>
+</div>
+
+
+<!-- ═══ THIS WEEK ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">📋 This Week</div>
+  </div>
+  <div class="week-chart" id="week-chart"></div>
+  <div class="week-export">
+    <span class="week-note" id="week-save-note">Save today's planner to log your score</span>
+    <button class="export-btn" onclick="exportCSV()">⬇ Export to spreadsheet</button>
+  </div>
+</div>
+
+<!-- ═══ PLAN TOMORROW ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">🌙 Plan Tomorrow</div>
+    <span class="section-time">Evening</span>
+  </div>
+  <div class="ritual-item" style="margin-bottom:.75rem">
+    <div class="cb" id="r10" onclick="toggleRitual(10)"></div>
+    <div class="ritual-text"><h4>Evening reflection done</h4></div>
+  </div>
+  <div class="label-xs" style="margin-bottom:8px">Brain Dump — All Ideas &amp; Tasks for Tomorrow</div>
+  <div class="brain-wrap">
+    <textarea class="inp" id="brain-dump" style="min-height:140px;" placeholder="Write everything here — ideas, tasks, calls to make, content to post, follow-ups... get it all out of your head." oninput="saveDay();updateBrainCount()"></textarea>
+    <span class="brain-count" id="brain-count">0 ideas</span>
+  </div>
+  <button class="copy-btn" onclick="copyForClaude()">Copy for Claude → Pick my top 3 for tomorrow</button>
+  <p class="copy-note">Paste into Claude → it picks your top 3 → copy them back into Tomorrow's top 3 below.</p>
+  <div class="divider"></div>
+  <div class="label-xs" style="margin-bottom:9px">Tomorrow's Top 3</div>
+  <div class="p-row"><div class="p-num hash">#1</div><input class="inp p-inp" id="t1" placeholder="Most important thing tomorrow..." oninput="saveDay()"></div>
+  <div class="p-row"><div class="p-num hash">#2</div><input class="inp p-inp" id="t2" placeholder="Second priority..." oninput="saveDay()"></div>
+  <div class="p-row"><div class="p-num hash">#3</div><input class="inp p-inp" id="t3" placeholder="Third priority..." oninput="saveDay()"></div>
+  <div class="divider"></div>
+  <div class="label-xs" style="margin-bottom:8px">⚡ Important Notes</div>
+  <textarea class="inp" id="imp-notes" style="min-height:110px;" placeholder="Strategic notes, decisions, reminders for tomorrow...&#10;&#10;Example:&#10;On the 3pm meeting: Skip it unless it's a potential client. Protect your outreach time.&#10;Study automations in the evening, 30 min max. Daughter time is non-negotiable." oninput="saveDay()"></textarea>
+  <div class="divider"></div>
+  <div class="label-xs" style="margin-bottom:10px">Sleep Target</div>
+  <div class="sleep-row">
+    <span style="font-size:13px;color:var(--text2);">Lights out by</span>
+    <input class="sleep-inp" id="sleep-out" type="time" value="22:00" oninput="saveDay();calcSleep()">
+    <span style="font-size:13px;color:var(--text2);">Wake up at</span>
+    <input class="sleep-inp" id="sleep-wake" type="time" value="05:30" oninput="saveDay();calcSleep()">
+    <span class="sleep-calc" id="sleep-calc">→ 7h 30m of sleep. ✓ Great rest target.</span>
+  </div>
+</div>
+
+<!-- ═══ TODAY'S SCORE ═══ -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-title">📊 Today's Score</div>
+    <span class="section-time">After planning tomorrow</span>
+  </div>
+  <p class="section-sub">Planning tomorrow is non-negotiable. Your score is only complete when that's done too.</p>
+  <div class="score-grid">
+    <div class="score-cell"><span class="score-val" id="sc-rituals">0/8</span><span class="score-lbl">Rituals Done</span></div>
+    <div class="score-cell"><span class="score-val" id="sc-priorities">0/3</span><span class="score-lbl">Priorities Done</span></div>
+    <div class="score-cell"><span class="score-val" id="sc-day">0%</span><span class="score-lbl">Day Score</span></div>
+  </div>
+</div>
+
+<!-- BOTTOM ACTIONS -->
+<div class="bottom-actions">
+  <button class="save-btn" onclick="saveAll()">Save Today's Planner</button>
+  <button class="newday-btn" onclick="newDay()">New Day</button>
+</div>
+<div class="autosave" id="autosave-msg">auto-saving</div>
+
+</div><!-- /page -->
+
+<script>
+const PERM_KEY = 'lmc_perm_v1';
+const DAY_KEY  = 'lmc_day_v1';
+const WEEK_KEY = 'lmc_week_v1';
+
+const DAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const TOTAL_RITUALS = 11;
+
+function todayISO(){ return new Date().toISOString().split('T')[0]; }
+function todayDOW(){ return new Date().getDay(); }
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', () => {
+  setHero();
+  loadPerm();
+  buildTimeBlocks();
+  loadDay();
+  buildWeekChart();
+  calcOutreach();
+  calcSleep();
+  updateDayProgress();
+  updateScore();
+});
+
+function setHero(){
+  const d = new Date();
+  document.getElementById('hero-date').textContent = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const h = d.getHours();
+  const greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('hero-greeting').textContent = greet + ', Nancy 🌟';
+}
+
+/* ── PERMANENT STORAGE ── */
+function savePerm(){
+  const d = {
+    gYear: v('g-year'), gMonth: v('g-month'), gWeek: v('g-week'),
+    cYear: v('c-year'), cPrice: v('c-price'), cDms: v('c-dms')
+  };
+  localStorage.setItem(PERM_KEY, JSON.stringify(d));
+  calcOutreach();
+}
+function loadPerm(){
+  try{
+    const d = JSON.parse(localStorage.getItem(PERM_KEY)||'{}');
+    sv('g-year',d.gYear); sv('g-month',d.gMonth); sv('g-week',d.gWeek);
+    sv('c-year',d.cYear); sv('c-price',d.cPrice); sv('c-dms',d.cDms);
+  }catch(e){}
+}
+
+/* ── DAY STORAGE ── */
+let rituals = new Array(TOTAL_RITUALS).fill(false);
+let pChecks = [false,false,false];
+
+function saveDay(){
+  const d = {
+    date: todayISO(),
+    gToday: v('g-today'),
+    p1:v('p1'),p2:v('p2'),p3:v('p3'),
+    pc: pChecks,
+    extra: v('extra-tasks'),
+    timeBlocks: getTimeBlockValues(),
+    rituals,
+    brainDump: v('brain-dump'),
+    t1:v('t1'),t2:v('t2'),t3:v('t3'),
+    impNotes: v('imp-notes'),
+    sleepOut: v('sleep-out'), sleepWake: v('sleep-wake')
+  };
+  localStorage.setItem(DAY_KEY, JSON.stringify(d));
+  flashSave();
+  updateDayProgress();
+  updateScore();
+}
+
+function loadDay(){
+  try{
+    const raw = localStorage.getItem(DAY_KEY);
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    // New day: carry tomorrow's top 3 → today's priorities
+    if(d.date && d.date !== todayISO()){
+      sv('p1', d.t1||''); sv('p2', d.t2||''); sv('p3', d.t3||'');
+      saveDay();
+      return;
+    }
+    sv('g-today',d.gToday);
+    sv('p1',d.p1);sv('p2',d.p2);sv('p3',d.p3);
+    sv('extra-tasks',d.extra);
+    setTimeBlockValues(d.timeBlocks);
+    sv('brain-dump',d.brainDump);
+    sv('t1',d.t1);sv('t2',d.t2);sv('t3',d.t3);
+    sv('imp-notes',d.impNotes);
+    sv('sleep-out',d.sleepOut||'22:00');
+    sv('sleep-wake',d.sleepWake||'05:30');
+    if(d.pc) { pChecks = d.pc; pChecks.forEach((_,i)=>applyPCheck(i+1,pChecks[i])); }
+    if(d.rituals) { rituals = d.rituals; rituals.forEach((_,i)=>applyCb('r'+i,rituals[i])); }
+    updateBrainCount();
+    calcSleep();
+  }catch(e){}
+}
+
+/* ── WEEK STORAGE ── */
+function saveWeekScore(){
+  try{
+    const week = JSON.parse(localStorage.getItem(WEEK_KEY)||'{}');
+    const score = calcDayScore();
+    week[todayISO()] = score;
+    localStorage.setItem(WEEK_KEY, JSON.stringify(week));
+    buildWeekChart();
+    document.getElementById('week-save-note').textContent = 'Score saved for today ✓';
+  }catch(e){}
+}
+function getWeekData(){
+  try{ return JSON.parse(localStorage.getItem(WEEK_KEY)||'{}'); }catch(e){ return {}; }
+}
+
+/* ── RITUALS ── */
+function toggleRitual(i){
+  rituals[i] = !rituals[i];
+  applyCb('r'+i, rituals[i]);
+  saveDay();
+}
+function applyCb(id, on){
+  const el = document.getElementById(id);
+  if(!el) return;
+  on ? el.classList.add('on') : el.classList.remove('on');
+}
+
+/* ── PRIORITIES ── */
+function togglePriority(n){
+  pChecks[n-1] = !pChecks[n-1];
+  applyPCheck(n, pChecks[n-1]);
+  saveDay();
+}
+function applyPCheck(n, on){
+  const cb = document.getElementById('pc'+n);
+  const inp = document.getElementById('p'+n);
+  if(!cb||!inp) return;
+  on ? cb.classList.add('on') : cb.classList.remove('on');
+  on ? inp.classList.add('struck') : inp.classList.remove('struck');
+}
+
+/* ── OUTREACH CALCULATOR ── */
+function calcOutreach(){
+  const yr  = parseFloat(v('c-year').replace(/,/g,''))||0;
+  const pr  = parseFloat(v('c-price').replace(/,/g,''))||0;
+  const dms = parseFloat(v('c-dms'))||0;
+  if(!yr||!pr||!dms){ clearCalc(); return; }
+  const clientsPerYear = yr / pr;
+  const clientsPerWeek = clientsPerYear / 52;
+  const callsPerWeek   = clientsPerWeek / 0.25;
+  const dmsPerWeek     = dms * 5;
+  const bookRate       = (callsPerWeek / dmsPerWeek * 100);
+  const monthly = yr / 12;
+  const weekly  = yr / 52;
+
+  setText('cr-monthly', fmt(monthly));
+  setText('cr-weekly',  fmt(weekly));
+  setText('cr-cpw',     clientsPerWeek < 1 ? '<1' : clientsPerWeek.toFixed(1));
+  setText('cr-calls',   Math.ceil(callsPerWeek));
+  setText('cr-bookrate', bookRate.toFixed(1)+'%');
+
+  // Mirror to afternoon stats
+  setText('rs-dms',    dms);
+  setText('rs-calls',  Math.ceil(callsPerWeek));
+  setText('rs-clients', clientsPerWeek < 1 ? '<1' : Math.ceil(clientsPerWeek));
+
+  const insight = document.getElementById('calc-insight');
+  insight.style.display = 'block';
+  insight.innerHTML = '✓ Booking rate needed: '+bookRate.toFixed(1)+'%. This is within reach — your messaging quality is what determines it.<br>Standard: send '+dms+' DMs/day → book '+Math.ceil(callsPerWeek)+' calls/week → close '+(clientsPerWeek<1?1:Math.ceil(clientsPerWeek))+' client'+(clientsPerWeek>=2?'s':'')+'/week at 25% close rate.<br><span style="color:var(--text2);font-size:11px;">*Adjust your close rate as you learn your real numbers. 25% is the industry benchmark starting point.</span>';
+}
+function clearCalc(){
+  ['cr-monthly','cr-weekly','cr-cpw','cr-calls','cr-bookrate'].forEach(id=>setText(id,'—'));
+  document.getElementById('calc-insight').style.display='none';
+}
+/* ── TIME BLOCK TRACKER (30-min) ── */
+const TIMEBLOCK_START = 6;  // 6:00 AM
+const TIMEBLOCK_END   = 22; // 10:00 PM
+function buildTimeBlocks(){
+  const wrap = document.getElementById('timeblock-rows');
+  wrap.innerHTML = '';
+  const now = new Date();
+  const curMins = now.getHours()*60 + now.getMinutes();
+  for(let m = TIMEBLOCK_START*60; m < TIMEBLOCK_END*60; m += 30){
+    const h = Math.floor(m/60), mi = m%60;
+    const label = (h%12===0?12:h%12) + ':' + (mi===0?'00':mi) + (h<12?'am':'pm');
+    const isNow = curMins >= m && curMins < m+30;
+    const row = document.createElement('div');
+    row.className = 'tb-row';
+    row.innerHTML = `<span class="tb-time${isNow?' now':''}">${label}</span><input class="inp tb-inp" id="tb-${m}" placeholder="What did I do?" oninput="saveDay()">`;
+    wrap.appendChild(row);
+  }
+}
+function getTimeBlockValues(){
+  const out = {};
+  for(let m = TIMEBLOCK_START*60; m < TIMEBLOCK_END*60; m += 30){
+    out[m] = v('tb-'+m);
+  }
+  return out;
+}
+function setTimeBlockValues(data){
+  if(!data) return;
+  for(let m = TIMEBLOCK_START*60; m < TIMEBLOCK_END*60; m += 30){
+    sv('tb-'+m, data[m]);
+  }
+}
+
+/* ── SLEEP CALCULATOR ── */
+function calcSleep(){
+  const out  = v('sleep-out')||'22:00';
+  const wake = v('sleep-wake')||'05:30';
+  const [oh,om] = out.split(':').map(Number);
+  const [wh,wm] = wake.split(':').map(Number);
+  let mins = (wh*60+wm) - (oh*60+om);
+  if(mins < 0) mins += 1440;
+  const h = Math.floor(mins/60), m = mins%60;
+  const quality = mins >= 420 ? '✓ Great rest target.' : mins >= 360 ? '⚠ Aim for 7+ hours.' : '⚠ Too little sleep.';
+  document.getElementById('sleep-calc').textContent = `→ ${h}h ${m}m of sleep. ${quality}`;
+}
+
+/* ── BRAIN DUMP ── */
+function updateBrainCount(){
+  const txt = v('brain-dump').trim();
+  const lines = txt ? txt.split('\n').filter(l=>l.trim()).length : 0;
+  document.getElementById('brain-count').textContent = lines+' idea'+(lines!==1?'s':'');
+}
+function copyForClaude(){
+  const txt = v('brain-dump').trim();
+  if(!txt){ alert('Write your brain dump first!'); return; }
+  const msg = `Based on my brain dump below, extract the 3 most important priorities I should focus on TOMORROW based on what will move my business forward the most. Explain briefly why you picked each one.\n\nBrain dump:\n${txt}`;
+  navigator.clipboard.writeText(msg).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Copied! Paste into Claude';
+    setTimeout(()=>{ btn.textContent = 'Copy for Claude → Pick my top 3 for tomorrow'; }, 3000);
+  });
+}
+
+/* ── SCORE ── */
+function calcDayScore(){
+  const ritDone = rituals.filter(Boolean).length;
+  const priDone = pChecks.filter(Boolean).length;
+  const total = TOTAL_RITUALS + 3;
+  return Math.round(((ritDone + priDone) / total) * 100);
+}
+function updateScore(){
+  const ritDone = rituals.filter(Boolean).length;
+  const priDone = pChecks.filter(Boolean).length;
+  const score   = calcDayScore();
+  setText('sc-rituals',    ritDone+'/'+TOTAL_RITUALS);
+  setText('sc-priorities', priDone+'/3');
+  setText('sc-day',        score+'%');
+}
+function updateDayProgress(){
+  const score = calcDayScore();
+  document.getElementById('day-prog-fill').style.width = score+'%';
+  document.getElementById('day-prog-label').textContent = score+'% of your ideal day completed';
+}
+
+/* ── WEEK CHART ── */
+function buildWeekChart(){
+  const wrap = document.getElementById('week-chart');
+  const weekData = getWeekData();
+  const today = todayDOW();
+  const todayISOs = todayISO();
+
+  // get Mon–Sun of current week
+  const d = new Date();
+  const mondayOffset = (d.getDay()+6)%7;
+  wrap.innerHTML = '';
+
+  for(let i=0;i<7;i++){
+    const wd = new Date(d);
+    wd.setDate(d.getDate() - mondayOffset + i);
+    const iso = wd.toISOString().split('T')[0];
+    const dayName = ['MON','TUE','WED','THU','FRI','SAT','SUN'][i];
+    const isToday = iso === todayISOs;
+    const score = weekData[iso] ?? null;
+    const pct = score !== null ? score : 0;
+    const barH = Math.max(4, Math.round(pct * 0.8));
+
+    wrap.innerHTML += `<div class="week-day">
+      <div class="week-pct">${score !== null ? score+'%' : ''}</div>
+      <div class="week-bar-wrap"><div class="week-bar ${isToday?'today':score!==null?'has-data':''}" style="height:${barH}px"></div></div>
+      <div class="week-lbl" style="${isToday?'color:var(--gold)':''}">${dayName}</div>
+    </div>`;
+  }
+}
+
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx44RVeU5baOFnkDy-OXL0J4lTEIL9Hk3PdDQGjB8Qq0s1TBud0hG7uD8nheWfEIPAr/exec';
+
+function syncToSheets(){
+  const score = calcDayScore();
+  const ritDone = rituals.filter(Boolean).length;
+  const payload = {
+    date: todayISO(),
+    gToday: v('g-today'),
+    p1: v('p1'), p2: v('p2'), p3: v('p3'),
+    pc: pChecks,
+    extra: v('extra-tasks'),
+    ritualsDone: ritDone,
+    dayScore: score,
+    t1: v('t1'), t2: v('t2'), t3: v('t3'),
+    sleepOut: v('sleep-out'), sleepWake: v('sleep-wake'),
+    timeBlocks: getTimeBlockValues()
+  };
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{});
+}
+
+/* ── SAVE ALL (button) ── */
+function saveAll(){
+  saveDay();
+  saveWeekScore();
+  syncToSheets();
+  const btn = document.querySelector('.save-btn');
+  btn.textContent = '✓ Saved & Synced to Sheets!';
+  setTimeout(()=>{ btn.textContent = "Save Today's Planner"; }, 2500);
+}
+
+/* ── NEW DAY ── */
+function newDay(){
+  if(!confirm('Start a fresh day? Today\'s data will be cleared.')) return;
+  localStorage.removeItem(DAY_KEY);
+  location.reload();
+}
+
+/* ── EXPORT CSV ── */
+function exportCSV(){
+  const weekData = getWeekData();
+  let csv = 'Date,Score\n';
+  Object.entries(weekData).sort().forEach(([dt,sc])=>{ csv += `${dt},${sc}%\n`; });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lmc-weekly-scores.csv';
+  a.click();
+}
+
+/* ── AUTO-SAVE FLASH ── */
+let saveTimer;
+function flashSave(){
+  const el = document.getElementById('autosave-msg');
+  el.textContent = '✓ saved';
+  el.classList.add('ok');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{ el.textContent='auto-saving'; el.classList.remove('ok'); }, 1500);
+}
+
+/* ── PIPELINE TRACKER ── */
+let pipeline = [];
+const STAGE_OPTIONS = ['New Lead','DM Sent','Replied','Qualified','Call Booked','Call Done','Proposal Sent','Closed ✓','Not Now'];
+
+function addPipelineRow(data){
+  const idx = pipeline.length;
+  if(!data) {
+    data = {name:'',stage:'New Lead',note:''};
+    pipeline.push(data);
+  }
+  const wrap = document.getElementById('pipeline-rows');
+  const row = document.createElement('div');
+  row.id = 'pl-row-'+idx;
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 140px 1fr auto;gap:6px;margin-bottom:6px;align-items:center;';
+  const stageOpts = STAGE_OPTIONS.map(s=>`<option value="${s}" ${s===data.stage?'selected':''}>${s}</option>`).join('');
+  row.innerHTML = `
+    <input class="inp" style="font-size:13px;padding:7px 10px;" placeholder="Lead name / handle..." value="${data.name||''}" oninput="updatePipeline(${idx},'name',this.value)">
+    <select class="inp" style="font-size:12px;padding:7px 10px;" onchange="updatePipeline(${idx},'stage',this.value)">${stageOpts}</select>
+    <input class="inp" style="font-size:12px;padding:7px 10px;" placeholder="Note (objection, next step...)" value="${data.note||''}" oninput="updatePipeline(${idx},'note',this.value)">
+    <button onclick="removePipelineRow(${idx})" style="background:transparent;border:0.5px solid var(--border3);border-radius:var(--radius-sm);color:var(--text3);font-size:13px;width:30px;height:34px;cursor:pointer;">✕</button>
+  `;
+  wrap.appendChild(row);
+  saveDay();
+}
+
+function updatePipeline(idx, field, val){
+  if(pipeline[idx]) pipeline[idx][field] = val;
+  saveDay();
+}
+
+function removePipelineRow(idx){
+  pipeline.splice(idx,1);
+  renderPipeline();
+  saveDay();
+}
+
+function renderPipeline(){
+  document.getElementById('pipeline-rows').innerHTML = '';
+  const tmp = [...pipeline];
+  pipeline = [];
+  tmp.forEach(d => addPipelineRow(d));
+}
+
+/* ── PIPELINE SAVE/LOAD (patch into saveDay/loadDay) ── */
+const _origSaveDay = saveDay;
+saveDay = function(){
+  _origSaveDay();
+  try{
+    const raw = localStorage.getItem(DAY_KEY);
+    if(raw){ const d=JSON.parse(raw); d.pipeline=pipeline; localStorage.setItem(DAY_KEY,JSON.stringify(d)); }
+  }catch(e){}
+};
+
+function loadPipeline(data){
+  pipeline = [];
+  document.getElementById('pipeline-rows').innerHTML = '';
+  if(data && Array.isArray(data)) data.forEach(d=>addPipelineRow(d));
+}
+
+/* override loadDay to also restore pipeline */
+const _origLoadDay = loadDay;
+window.addEventListener('DOMContentLoaded',()=>{
+  try{
+    const raw = localStorage.getItem(DAY_KEY);
+    if(raw){ const d=JSON.parse(raw); if(d.pipeline) loadPipeline(d.pipeline); }
+  }catch(e){}
+},false);
+
+
+function v(id){ const el=document.getElementById(id); return el?el.value:''; }
+function sv(id,val){ const el=document.getElementById(id); if(el&&val!=null) el.value=val; }
+function setText(id,txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
+function fmt(n){ return n>=1000 ? '$'+Math.round(n/1000)+'k' : Math.round(n).toLocaleString(); }
+</script>
+</body>
+</html>
