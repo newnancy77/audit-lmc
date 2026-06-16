@@ -536,6 +536,19 @@ textarea.inp{resize:vertical;min-height:90px;line-height:1.55;}
 </div><!-- /app-content -->
 
 <script>
+  // Auto-reset checkboxes daily
+const today = new Date().toDateString();
+const lastSaved = localStorage.getItem('lmc_last_date');
+
+if (lastSaved !== today) {
+  // Clear all saved checkbox states
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('checkbox_') || key === 'lmc_checkboxes') {
+      localStorage.removeItem(key);
+    }
+  });
+  localStorage.setItem('lmc_last_date', today);
+}
 const LOCK_PASSWORD = 'Diana2026';
 const LOCK_KEY = 'lmc_unlocked';
 
